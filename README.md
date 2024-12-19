@@ -24,17 +24,92 @@ In timing diagram Q0 is changing as soon as the negative edge of clock pulse is 
 
 **Procedure**
 
-/* write all the steps invloved */
+
 
 **PROGRAM**
 
+module ripple (
+
+    input clk,     // Clock input
+    
+    input reset,   // Reset input (active high)
+    
+    output [3:0] q // 4-bit output
+
+);
+
+    // Internal signals for flip-flops
+    
+    reg [3:0] q_int;
+
+    
+    // Assign internal register to output
+    
+    assign q = q_int;
+
+    always @(posedge clk or posedge reset) begin
+    
+        if (reset) 
+        
+            q_int[0] <= 1'b0; // Reset the first bit to 0
+        
+        else 
+        
+            q_int[0] <= ~q_int[0]; // Toggle the first bit on clock edge
+    
+    end
+
+    // Generate the other flip-flops based on the output of the previous one
+    
+    genvar i;
+    
+    generate
+    
+        for (i = 1; i < 4; i = i + 1) begin : ripple
+        
+            always @(posedge q_int[i-1] or posedge reset) begin
+            
+                if (reset) 
+                
+                    q_int[i] <= 1'b0; // Reset the bit to 0
+                else 
+                    
+                    q_int[i] <= ~q_int[i]; // Toggle the bit on clock edge of previous stage
+            
+            end
+        
+        end
+    
+    endgenerate
+
+endmodule
+
 /* Program for 4 Bit Ripple Counter and verify its truth table in quartus using Verilog programming.
 
- Developed by: RegisterNumber:
+ Developed by:Y.Nitheesh 
+ 
+ RegisterNumber:24011476
 */
 
 **RTL LOGIC FOR 4 Bit Ripple Counter**
 
+![Screenshot 2024-12-19 164559](https://github.com/user-attachments/assets/1f773753-26de-4d33-a396-3041b8861396)
+
 **TIMING DIGRAMS FOR 4 Bit Ripple Counter**
 
+![Screenshot 2024-12-19 164616](https://github.com/user-attachments/assets/07fd1ce9-110a-42c5-b363-7b6d6df333a5)
+
 **RESULTS**
+ The 4-bit ripple counter was successfully implemented using Verilog in Quartus Prime. The 
+ 
+ functionality was verified using a testbench, which simulated the counter's operation. The counter
+ 
+ correctly counted from 0000 to 1111, incrementing by 1 on each clock pulse. After reaching 1111,
+ 
+ the counter reset to 0000, as expected. The timing diagrams and the functional table showed that
+ 
+ the ripple counter operated as intended, with each flip-flop toggling on the rising edge of the
+ 
+ previous flip-flop's output. The simulation results confirmed the correct operation of the 4-bit
+ 
+ ripple counter
